@@ -1,4 +1,4 @@
-# Dotfiles
+# Dotfiles💾
 
 Important dotfiles stored in the same place.
 
@@ -6,33 +6,28 @@ Important dotfiles stored in the same place.
 
 ### Git
 
-Used for version control and to download this repo.
-
 ```
 brew install git
 ```
 
 ### Stow
-
-Stow is used to manage all dotfiles in one folder, and create symlinks in the correct locations
-
 ```
 brew install stow
 ```
 
 ## Installation
 
-Check out the dotfiles repo in the $HOME directory using git.
+Check out the dotfiles repo in the 🏠 directory using git.
 
 ```
-$ git clone git@github.com:jakeberggren/dotfiles.git
-$ cd dotfiles
+git clone git@github.com:jakeberggren/dotfiles.git
+cd dotfiles
 ```
 
 Then use GNU stow to create symlinks
 
 ```
-$ stow .
+stow .
 ```
 
 For more information, refer to this [YouTube Video](https://www.youtube.com/watch?v=y6XCebnB9gs)
