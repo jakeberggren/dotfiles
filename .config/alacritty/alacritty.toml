@@ -1,6 +1,14 @@
 import = ["/Users/jakobberggren/.config/alacritty/themes/custom/snake.toml"]
 live_config_reload = true
 
+[keyboard]
+bindings = [
+   { key = "n", mods = "Command", action = "SpawnNewInstance" }
+]
+
+[mouse]
+hide_when_typing = true
+
 [cursor]
 blink_timeout = 0
 unfocused_hollow = false
@@ -13,7 +21,6 @@ shape = "Underline"
 TERM = "xterm-256color"
 
 [font]
-
 size = 15.0
 
 [font.normal]
@@ -25,6 +32,7 @@ history = 10000
 multiplier = 3
 
 [window]
+dynamic_padding = true
 decorations = "buttonless"
 opacity = 0.9
 
