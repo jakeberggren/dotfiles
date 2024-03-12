@@ -41,27 +41,20 @@
 	ui = auto
 
 [color "branch"]
-
-	current = yellow reverse
-	local = yellow
+	current = cyan reverse
+	local = cyan
 	remote = green
 
 [color "diff"]
-
 	meta = yellow bold
 	frag = magenta bold # line info
 	old = red # deletions
 	new = green # additions
 
-[color "status"]
-
-	added = yellow
-	changed = green
-	untracked = cyan
-
-[commit]
-	# https://help.github.com/articles/signing-commits-using-gpg/
-	gpgsign = true
+#[color "status"]
+#	added = yellow
+#	changed = cyan
+#	untracked = red
 
 [diff]
 	# Detect copies as well as renames.
