@@ -10,7 +10,7 @@ function git_branch() {
     fi
 }
 
-# Alternative git functionality
+# Alternative git functionality with branch to the right
 # autoload -Uz vcs_info
 # precmd_vcs_info() { vcs_info }
 # precmd_functions+=( precmd_vcs_info )
@@ -58,7 +58,6 @@ alias .....="cd ../../../.."
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
 alias home="cd ~"
-alias dgit="cd ~/Desktop/Git" 
 
 # GIT
 alias g="git"
