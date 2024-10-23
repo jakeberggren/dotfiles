@@ -5,35 +5,12 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Add git status functionality
-function git_branch() {
-    branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/(\1)/p')
-    if [[ $branch == "" ]];
-    then
-        echo""
-    else
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
-        echo 'on  '$branch' '
-    fi
-}
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Alternative git functionality with branch to the right
-# autoload -Uz vcs_info
-# precmd_vcs_info() { vcs_info }
-# precmd_functions+=( precmd_vcs_info )
-# setopt prompt_subst
-# RPROMPT='${vcs_info_msg_0_}'
-# PROMPT='${vcs_info_msg_0_}%# '
-# zstyle ':vcs_info:git:*' formats '%b'
-
-#Prompt indicator
-#funtion prompt_indicator() {
-#    if [[ "$PWD" = "$HOME" ]];then
-#        echo ""
-#    else
-#        echo ""
-#    fi
-#}
+export LANG=en_US
 
 # Better history
 HISTFILE=$HOME/.zhistory
@@ -48,10 +25,6 @@ setopt hist_verify
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
-# Customize prompt
-setopt PROMPT_SUBST
-PROMPT='%F{magenta} %3~ %F{blue}$(git_branch)%F{green} '
-
 # Case insensitive tab completion
 autoload -Uz compinit && compinit
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}'
@@ -64,7 +37,12 @@ killport() {
     kill -9 $(lsof -ti:$1)
   fi
 }
-# --- ALIASES BELOW ---
+
+# ---- PLUGINS ----
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# ---- ALIASES ----
 
 # PYTHON
 alias py="python3"
@@ -88,22 +66,71 @@ alias gc="git commit"
 alias gch="git checkout"
 alias lg="lazygit"
 
-# EZA
-alias ls="eza --long --header --git --no-permissions --no-user --icons --no-time --no-filesize --tree --level=1"
-
 #VENV
 alias svenv="source venv/bin/activate"
 
+# ---- eza (instead of cd) ----
+alias ls="eza --long --header --git --git-repos-no-status --no-permissions --no-user --icons --no-time --no-filesize --tree --level=1"
+
+# ---- zoxide (instead of ls) ----
+eval "$(zoxide init --cmd cd zsh)"
+
+# ---- bat (instead of cat) ----
+export BAT_THEME="Dracula"
+alias cat="bat"
+
+# ---- FZF -----
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Dracula theme for fzf
+export FZF_DEFAULT_OPTS='--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9 --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9 --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6 --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
+
+# -- Use fd instead of fzf --
+
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+# Use fd (https://github.com/sharkdp/fd) for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  fd --hidden --exclude .git . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fd --type=d --hidden --exclude .git . "$1"
+}
+
+show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi"
+
+export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
+# Advanced customization of fzf options via _fzf_comprun function
+# - The first argument to the function is the name of the command.
+# - You should make sure to pass the rest of the arguments to fzf.
+_fzf_comprun() {
+  local command="$1"
+  shift
+
+  case "$command" in
+    cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
+    export|unset) fzf --preview "eval 'echo \${}'"         "$@" ;;
+    ssh)          fzf --preview 'dig {}'                   "$@" ;;
+    *)            fzf --preview "$show_file_or_dir_preview" "$@" ;;
+  esac
+}
+
+alias sd="cd ~ && cd \$(find * -type d | fzf --preview 'eza --tree --color=always {}')"
+
+# ---- Node verison Manager ----
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export LANG=en_US
-
-# PLUGINS
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-
+# ---- Conda ----
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/Users/jakobberggren/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -119,8 +146,16 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-eval "$(zoxide init --cmd cd zsh)"
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+### No longer in use ###
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# Add git status functionality
+# function git_branch() {
+#    branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/(\1)/p')
+#    if [[ $branch == "" ]];
+#    then
+#        echo""
+#    else
+#
+#        echo 'on  '$branch' '
+#    fi
+#}
