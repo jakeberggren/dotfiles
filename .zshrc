@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # Add git status functionality
 function git_branch() {
     branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/(\1)/p')
@@ -28,21 +35,35 @@ function git_branch() {
 #    fi
 #}
 
+# Better history
+HISTFILE=$HOME/.zhistory
+SAVEHIST=1000
+HISTSIZE=999
+setopt share_history
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_verify
+
+# completion using arrow keys (based on history)
+bindkey '^[[A' history-search-backward
+bindkey '^[[B' history-search-forward
+
 # Customize prompt
 setopt PROMPT_SUBST
-PROMPT='%F{magenta} %3~ %F{blue}$(git_branch)%F{green} '
-
-# Activate colors for command ls
-export CLICOLOR=1 #Turn colors on
-# export LSCOLORS=ExFxBxDxCxegedabagacad #Customize colors for command ls
-# export LSCOLORS=gafacadabaegedabagacad #Customize colors for commands ls
-# export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
-export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+PROMPT='%F{magenta} %3~ %F{blue}$(git_branch)%F{green} '
 
 # Case insensitive tab completion
 autoload -Uz compinit && compinit
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}'
 
+# Function to kill certain port
+killport() {
+  if [ -z "$1" ]; then
+    echo "Please provide a port number."
+  else
+    kill -9 $(lsof -ti:$1)
+  fi
+}
 # --- ALIASES BELOW ---
 
 # PYTHON
@@ -67,22 +88,17 @@ alias gc="git commit"
 alias gch="git checkout"
 alias lg="lazygit"
 
+# EZA
+alias ls="eza --long --header --git --no-permissions --no-user --icons --no-time --no-filesize --tree --level=1"
+
 #VENV
 alias svenv="source venv/bin/activate"
-alias kill5000='kill -9 $(lsof -ti:5000)'
-alias kill8000='kill -9 $(lsof -ti:8000)'
-
-#SMS
-alias mess="osascript ~/Desktop/SendMessage.scpt"
-alias akke.nr="0739156399"
-alias hugge.nr="0707232389"
-
-#SSH
-alias liussh="ssh -Y jakbe841@ssh.edu.liu.se"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export LANG=en_US
 
 # PLUGINS
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -97,11 +113,14 @@ else
     if [ -f "/Users/jakobberggren/miniforge3/etc/profile.d/conda.sh" ]; then
         . "/Users/jakobberggren/miniforge3/etc/profile.d/conda.sh"
     else
-        export PATH="/Users/jakobberggren/miniforge3/bin:$PATH"
+        export PATH="/Users/jakobberggren/miniforge3/bin:$PATH"2
     fi
 fi
 unset __conda_setup
 # <<< conda initialize <<<
 
 eval "$(zoxide init --cmd cd zsh)"
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

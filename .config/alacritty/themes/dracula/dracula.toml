@@ -1,42 +1,12 @@
-live_config_reload = true
+# Dracula theme for Alacritty
+# https://draculatheme.com/alacritty
+#
+# Color palette
+# https://spec.draculatheme.com
+#
+# Instructions
+# https://github.com/alacritty/alacritty/blob/master/extra/man/alacritty.5.scd
 
-[keyboard]
-bindings = [{ key = "n", mods = "Command", action = "SpawnNewInstance" }]
-
-[mouse]
-hide_when_typing = true
-
-[cursor]
-blink_timeout = 0
-unfocused_hollow = false
-
-[cursor.style]
-blinking = "Always"
-shape = "Underline"
-
-[env]
-TERM = "xterm-256color"
-
-[font]
-size = 15.0
-
-[font.normal]
-family = "JetBrainsMono Nerd Font"
-style = "Regular"
-
-[scrolling]
-history = 10000
-multiplier = 3
-
-[window]
-dimensions = { columns = 100, lines = 35 }
-padding = { x = 5, y = 5 }
-dynamic_padding = false
-decorations = "buttonless"
-opacity = 0.8
-blur = true
-
-# Dracula Theme
 [colors.primary]
 
 background = "#282a36"
